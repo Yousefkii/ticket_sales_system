@@ -79,6 +79,9 @@ public class ClientDao {
             return result > 0;
         } catch (SQLException e) {
             System.err.println("Error adding customer: " + e.getMessage());
+            System.err.println("SQLState: " + e.getSQLState());
+            System.err.println("Error code: " + e.getErrorCode());
+            e.printStackTrace();
             return false;
         }
     }
@@ -111,4 +114,32 @@ public class ClientDao {
             return false;
         }
     }
+    public Client login(String name, String password) {
+        String sql = "SELECT id, name, email, password FROM Customers " +
+                "WHERE name = ? AND password = ?";
+        try (Connection conn = Database.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, name);
+            pstmt.setString(2, password);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Client(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("password")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error during login: " + e.getMessage());
+        }
+        return null;
+    }
+
+
+
+
 }

@@ -64,11 +64,11 @@ public class Server {
             delete("/tickets/:id", ticketController::deleteTicket);
 
             // Orders
-            get("/orders", orderController::getAllOrders);
-            get("/orders/:id", orderController::getOrderById);
-            post("/orders", orderController::addOrder);
-            put("/orders/:id", orderController::updateOrder);
-            delete("/orders/:id", orderController::deleteOrder);
+//            get("/orders", orderController::getAllOrders);
+//            get("/orders/:id", orderController::getOrderById);
+//            post("/orders", orderController::addOrder);
+//            put("/orders/:id", orderController::updateOrder);
+//            delete("/orders/:id", orderController::deleteOrder);
         });
 
         exception(Exception.class, (exception, request, response) -> {

@@ -35,10 +35,14 @@ public class TicketController {
     public Object updateTicket(Request req, Response res) {
         int id = Integer.parseInt(req.params(":id"));
         Ticket ticket = gson.fromJson(req.body(), Ticket.class);
-        boolean success = ticketDao.updateTicket(id, ticket);
+
+        // choose what “update” means; e.g. only status for now:
+        boolean success = ticketDao.updateTicket(id, ticket.getStatus());
+
         res.type("application/json");
         return "{\"status\":\"" + (success ? "success" : "error") + "\"}";
     }
+
 
     public Object deleteTicket(Request req, Response res) {
         int id = Integer.parseInt(req.params(":id"));

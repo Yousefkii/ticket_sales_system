@@ -71,37 +71,41 @@ class Signup extends JFrame {
         submitButton.addActionListener(e -> {
 
             System.out.println("Sign up button clicked!");
-            String name = nameField.getText();
+            String name = usernameField.getText();              // use the visible username field
             String email = emailField.getText();
             String password = new String(passwordField.getPassword());
+            String confirm  = new String(confirmPasswordField.getPassword());
+
             System.out.println("Collected fields: " + name + ", " + email);
 
-            String json = "{\"name\":\"" + name + "\",\"email\":\"" + email + "\",\"password\":\"" + password + "\"}";
-            System.out.println("Prepared JSON: " + json);
+            if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "All fields are required");
+                return;
+            }
+            if (!password.equals(confirm)) {
+                JOptionPane.showMessageDialog(this, "Passwords do not match");
+                return;
+            }
 
             try {
-                URL url = new URL("http://localhost:9090/api/clients/signup");
-                System.out.println("Connecting to: " + url);
+                dao.ClientDao clientDao = new dao.ClientDao();
+                models.Client client = new models.Client(0, name, email, password); // id=0, DB generates real id
 
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setConnectTimeout(5000);
-                conn.setReadTimeout(5000);
-                conn.setRequestMethod("POST");
-                conn.setDoOutput(true);
-                conn.setRequestProperty("Content-Type", "application/json");
+                boolean ok = clientDao.addClient(client);
 
-                System.out.println("Sending request...");
-                try (OutputStream os = conn.getOutputStream()) {
-                    os.write(json.getBytes(StandardCharsets.UTF_8));
+                if (ok) {
+                    JOptionPane.showMessageDialog(this, "Account created successfully!");
+                    models.Client clientt = new models.Client(0, name, email, password);
+                    new MainPage(clientt).setVisible(true);
+                    this.dispose();
                 }
-                System.out.println("Request sent; waiting for response...");
-                int code = conn.getResponseCode();
-                System.out.println("Response code: " + code);
-
-                // ...rest of code...
+                else {
+                    JOptionPane.showMessageDialog(this, "Error while signing up (DB insert failed).");
+                }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(frame, "Error while signing up: " + ex.getClass().getName() + " - " + ex.getMessage());
+                JOptionPane.showMessageDialog(this,
+                        "Error while signing up: " + ex.getClass().getName() + " - " + ex.getMessage());
             }
         });
 

@@ -34,10 +34,6 @@ public class Login extends JFrame {
         passwordField.setBounds(360, 180, 320, 30);
         add(passwordField);
 
-        JTextField emailField = new JTextField(20);
-        JPasswordField passwordField = new JPasswordField(20);
-        JButton loginButton = new JButton("Login");
-
         loginButton = new JButton("Login");
         loginButton.setBounds(360, 240, 130, 40);
         add(loginButton);
@@ -52,32 +48,27 @@ public class Login extends JFrame {
 
         // Login action (example)
         loginButton.addActionListener(e -> {
-            String email = emailField.getText();
+            String name     = usernameField.getText();              // username, not email
             String password = new String(passwordField.getPassword());
 
-            // Prepare JSON
-            String json = "{\"email\":\"" + email + "\", \"password\":\"" + password + "\"}";
-            try {
-                URL url = new URL("http://localhost:8080/customers/login");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setDoOutput(true);
-                conn.setRequestProperty("Content-Type", "application/json");
-                try (OutputStream os = conn.getOutputStream()) {
-                    os.write(json.getBytes());
-                }
-                int responseCode = conn.getResponseCode();
+            System.out.println("Trying login with name = [" + name + "], password = [" + password + "]");
 
-                if (responseCode == 200) {
-                    // Success: proceed to main app window
-                    JOptionPane.showMessageDialog(this, "Login successful!");
-                } else {
-                    JOptionPane.showMessageDialog(this, "Login failed!");
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            dao.ClientDao clientDao = new dao.ClientDao();
+            models.Client client = clientDao.login(name, password);
+
+            if (client != null) {
+                JOptionPane.showMessageDialog(this,
+                        "Login successful! Welcome " + client.getName());
+                new MainPage(client).setVisible(true);
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Invalid username or password.");
             }
         });
+
+
+
 
         // Sign up action (example)
         signUpButton.addActionListener(e -> {

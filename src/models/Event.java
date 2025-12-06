@@ -7,10 +7,10 @@ public class Event {
     private String venue;
     private String description;
 
-    public Event(int id, String name, String date, String venue, String description) {
+    public Event(int id, String name, String event_date, String venue, String description) {
         this.id = id;
         this.name = name;
-        this.date = date;
+        this.date = event_date;
         this.venue = venue;
         this.description = description;
     }
@@ -24,7 +24,7 @@ public class Event {
 
     public void setId(int id) { this.id = id; }
     public void setName(String name) { this.name = name; }
-    public void setDate(String date) { this.date = date; }
+    public void setDate(String event_date) { this.date = event_date; }
     public void setVenue(String venue) { this.venue = venue; }
     public void setDescription(String description) { this.description = description; }
 }

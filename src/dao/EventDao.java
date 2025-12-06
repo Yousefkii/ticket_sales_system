@@ -7,21 +7,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EventDao {
-    public List<Event> getAllEvents() {
-        List<Event> events = new ArrayList<>();
-        String sql = "SELECT id, name, date, venue, description FROM Events";
+    public java.util.List<Event> getAllEvents() {
+        java.util.List<Event> events = new java.util.ArrayList<>();
+        String sql = "SELECT id, name, event_date, venue, description FROM Events";
         try (Connection conn = Database.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    events.add(new Event(
-                            rs.getInt("id"),
-                            rs.getString("name"),
-                            rs.getString("date"),
-                            rs.getString("venue"),
-                            rs.getString("description")
-                    ));
-                }
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                events.add(new Event(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("event_date"),
+                        rs.getString("venue"),
+                        rs.getString("description")
+                ));
             }
         } catch (SQLException e) {
             System.err.println("Error fetching events: " + e.getMessage());
@@ -30,7 +30,7 @@ public class EventDao {
     }
 
     public Event getEventById(int id) {
-        String sql = "SELECT id, name, date, venue, description FROM Events WHERE id = ?";
+        String sql = "SELECT id, name, event_date, venue, description FROM Events WHERE id = ?";
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, id);
@@ -39,7 +39,7 @@ public class EventDao {
                 return new Event(
                         rs.getInt("id"),
                         rs.getString("name"),
-                        rs.getString("date"),
+                        rs.getString("event_date"),
                         rs.getString("venue"),
                         rs.getString("description")
                 );
