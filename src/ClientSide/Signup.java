@@ -1,4 +1,9 @@
 package ClientSide;
+import models.Client;
+import services.AuthService;
+import services.AuthServiceImpl;
+import services.SignupResult;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
@@ -12,6 +17,7 @@ class Signup extends JFrame {
     private JPasswordField passwordField, confirmPasswordField;
     private JButton submitButton, returnButton;
     private JLabel userLabel, passLabel, confirmLabel, emailLabel, infoLabel;
+    private final AuthService authService = new AuthServiceImpl();
 
     public Signup() {
         setTitle("Sign Up Page");
@@ -69,45 +75,23 @@ class Signup extends JFrame {
         // Optional: add logic to switch back to Login or other action
         // Example action
         submitButton.addActionListener(e -> {
-
-            System.out.println("Sign up button clicked!");
-            String name = usernameField.getText();              // use the visible username field
-            String email = emailField.getText();
+            String name     = usernameField.getText();
+            String email    = emailField.getText();
             String password = new String(passwordField.getPassword());
             String confirm  = new String(confirmPasswordField.getPassword());
 
-            System.out.println("Collected fields: " + name + ", " + email);
+            SignupResult result = authService.signup(name, email, password, confirm);
 
-            if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "All fields are required");
-                return;
-            }
-            if (!password.equals(confirm)) {
-                JOptionPane.showMessageDialog(this, "Passwords do not match");
-                return;
-            }
-
-            try {
-                dao.ClientDao clientDao = new dao.ClientDao();
-                models.Client client = new models.Client(0, name, email, password); // id=0, DB generates real id
-
-                boolean ok = clientDao.addClient(client);
-
-                if (ok) {
-                    JOptionPane.showMessageDialog(this, "Account created successfully!");
-                    models.Client clientt = new models.Client(0, name, email, password);
-                    new MainPage(clientt).setVisible(true);
-                    this.dispose();
-                }
-                else {
-                    JOptionPane.showMessageDialog(this, "Error while signing up (DB insert failed).");
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(this,
-                        "Error while signing up: " + ex.getClass().getName() + " - " + ex.getMessage());
+            if (result.isSuccess()) {
+                JOptionPane.showMessageDialog(this, result.getMessage());
+                Client client = new Client(0, name, email, password);
+                new MainPage(client).setVisible(true);
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, result.getMessage());
             }
         });
+
 
 
         returnButton.addActionListener(e -> {

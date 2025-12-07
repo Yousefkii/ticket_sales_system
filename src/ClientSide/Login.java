@@ -1,4 +1,8 @@
 package ClientSide;
+import models.Client;
+import services.AuthService;
+import services.AuthServiceImpl;
+
 import javax.swing.*;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -11,6 +15,7 @@ public class Login extends JFrame {
     private JPasswordField passwordField;
     private JButton loginButton, signUpButton;
     private JLabel userLabel, passLabel, infoLabel;
+    private final AuthService authService = new AuthServiceImpl();
 
     public Login() {
         setTitle("Login Page");
@@ -48,13 +53,10 @@ public class Login extends JFrame {
 
         // Login action (example)
         loginButton.addActionListener(e -> {
-            String name     = usernameField.getText();              // username, not email
+            String name     = usernameField.getText();
             String password = new String(passwordField.getPassword());
 
-            System.out.println("Trying login with name = [" + name + "], password = [" + password + "]");
-
-            dao.ClientDao clientDao = new dao.ClientDao();
-            models.Client client = clientDao.login(name, password);
+            Client client = authService.login(name, password);
 
             if (client != null) {
                 JOptionPane.showMessageDialog(this,

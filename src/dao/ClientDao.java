@@ -7,11 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClientDao {
+
     public List<Client> getAllClients() {
         List<Client> customers = new ArrayList<>();
         String sql = "SELECT id, name, email, password FROM Customers";
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     customers.add(new Client(
@@ -32,6 +34,7 @@ public class ClientDao {
         String sql = "SELECT id, name, email, password FROM Customers WHERE id = ?";
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
@@ -52,6 +55,7 @@ public class ClientDao {
         String sql = "SELECT id, name, email, password FROM Customers WHERE email = ?";
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setString(1, email);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
@@ -72,6 +76,7 @@ public class ClientDao {
         String sql = "INSERT INTO Customers (name, email, password) VALUES (?, ?, ?)";
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setString(1, customer.getName());
             pstmt.setString(2, customer.getEmail());
             pstmt.setString(3, customer.getPassword());
@@ -90,6 +95,7 @@ public class ClientDao {
         String sql = "UPDATE Customers SET name = ?, email = ?, password = ? WHERE id = ?";
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setString(1, customer.getName());
             pstmt.setString(2, customer.getEmail());
             pstmt.setString(3, customer.getPassword());
@@ -106,6 +112,7 @@ public class ClientDao {
         String sql = "DELETE FROM Customers WHERE id = ?";
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setInt(1, id);
             int result = pstmt.executeUpdate();
             return result > 0;
@@ -114,6 +121,7 @@ public class ClientDao {
             return false;
         }
     }
+
     public Client login(String name, String password) {
         String sql = "SELECT id, name, email, password FROM Customers " +
                 "WHERE name = ? AND password = ?";
@@ -138,8 +146,4 @@ public class ClientDao {
         }
         return null;
     }
-
-
-
-
 }

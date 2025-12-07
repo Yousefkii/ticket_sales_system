@@ -48,7 +48,7 @@ public class ClientController {
     }
 
     // Optionally, add endpoints for login/signup using getClientByEmail, etc.
-    public Object signup(spark.Request req, spark.Response res) {
+    public Object signup(Request req, Response res) {
         System.out.println("==> /api/clients/signup HIT");
         System.out.println("Body: " + req.body());
         res.type("application/json");
@@ -59,7 +59,8 @@ public class ClientController {
     public Object login(Request req, Response res) {
         Client reqClient = gson.fromJson(req.body(), Client.class);
         Client dbClient = clientDao.getClientByEmail(reqClient.getEmail());
-        boolean success = (dbClient != null && dbClient.getPassword().equals(reqClient.getPassword()));
+        boolean success = (dbClient != null &&
+                dbClient.getPassword().equals(reqClient.getPassword()));
         res.type("application/json");
         if (success) {
             res.status(200);

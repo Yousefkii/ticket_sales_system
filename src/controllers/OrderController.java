@@ -24,13 +24,13 @@ public class OrderController {
 //        return order != null ? gson.toJson(order) : "{}";
 //    }
 //
-//    public Object addOrder(Request req, Response res) {
-//        Order order = gson.fromJson(req.body(), Order.class);
-//        boolean success = orderDao.addOrder(order);
-//        res.type("application/json");
-//        res.status(success ? 201 : 400);
-//        return "{\"status\":\"" + (success ? "success" : "error") + "\"}";
-//    }
+    public Object addOrder(Request req, Response res) {
+        Order order = gson.fromJson(req.body(), Order.class);
+        boolean success = orderDao.addOrder(order);
+        res.type("application/json");
+        res.status(success ? 201 : 400);
+        return "{\"status\":\"" + (success ? "success" : "error") + "\"}";
+    }
 //
 //    public Object updateOrder(Request req, Response res) {
 //        int id = Integer.parseInt(req.params(":id"));
