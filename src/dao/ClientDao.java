@@ -2,6 +2,7 @@ package dao;
 
 import db.Database;
 import models.Client;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,17 +13,16 @@ public class ClientDao {
         List<Client> customers = new ArrayList<>();
         String sql = "SELECT id, name, email, password FROM Customers";
         try (Connection conn = Database.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
 
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    customers.add(new Client(
-                            rs.getInt("id"),
-                            rs.getString("name"),
-                            rs.getString("email"),
-                            rs.getString("password")
-                    ));
-                }
+            while (rs.next()) {
+                customers.add(new Client(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("password")
+                ));
             }
         } catch (SQLException e) {
             System.err.println("Error fetching customers: " + e.getMessage());
@@ -36,14 +36,15 @@ public class ClientDao {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                return new Client(
-                        rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("password")
-                );
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Client(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("password")
+                    );
+                }
             }
         } catch (SQLException e) {
             System.err.println("Error fetching customer: " + e.getMessage());
@@ -57,14 +58,15 @@ public class ClientDao {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, email);
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                return new Client(
-                        rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("password")
-                );
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Client(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("password")
+                    );
+                }
             }
         } catch (SQLException e) {
             System.err.println("Error fetching customer: " + e.getMessage());
@@ -120,6 +122,15 @@ public class ClientDao {
             System.err.println("Error deleting customer: " + e.getMessage());
             return false;
         }
+    }
+
+    // Optional convenience method used by tests to clean up by email
+    public boolean deleteClientByEmail(String email) {
+        Client client = getClientByEmail(email);
+        if (client == null) {
+            return false;
+        }
+        return deleteClient(client.getId());
     }
 
     public Client login(String name, String password) {
